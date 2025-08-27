@@ -48,7 +48,7 @@ class DataProcessor:
         Returns:
             The text with stopwords removed.
         """
-        tokens = _WORD_RE.findall(text.lower())
+        tokens = _WORD_RE.findall(text)
         filtered_tokens = [w for w in tokens if w not in self.stop_words]
         return " ".join(filtered_tokens)
 
@@ -87,7 +87,7 @@ class DataProcessor:
         Returns:
             The lemmatized text.
         """
-        tokens = _WORD_RE.findall(text.lower())
+        tokens = _WORD_RE.findall(text)
         lemmas = [self.lemmatizer.lemmatize(w) for w in tokens]
         return " ".join(lemmas)
 
@@ -111,7 +111,7 @@ class DataProcessor:
 
 if __name__ == "__main__":
     processor = DataProcessor()
-    sample_text = "This is a sample text! It includes numbers 123 and special characters #@$."
-    preprocessed_text = processor.lemmatize(sample_text)
+    sample_text = "This is a sample text! It includes numbers 123 and special characters #@$. and Gun AK-47"
+    preprocessed_text = processor.preprocess(sample_text)
     print(f"Original Text: {sample_text}")
     print(f"Preprocessed Text: {preprocessed_text}")
