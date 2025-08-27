@@ -34,6 +34,6 @@ class DalMongo:
 
 if __name__ == "__main__":
     dal = DalMongo()
-    docs = dal.get_oldest_documents(time_stamp="2020-03-16T13:43:43.000+00:00", limit=100)
+    docs = dal.get_oldest_documents(time_stamp="2020-03-16T13:43:43.000+00:00", limit=2)
     for doc in docs:
         print(doc)
