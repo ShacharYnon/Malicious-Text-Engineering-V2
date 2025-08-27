@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 from pymongo.database import Database
 from .. import config
-
+import logging
+logger = logging.getLogger(__name__)
 class DatabaseConnection:
     """
     MongoDB connection manager
@@ -26,8 +27,10 @@ class DatabaseConnection:
             self.database = self.client[config.MONGODB_DATABASE]
             # Test the connection
             self.client.admin.command('ping')
+            logger.info(f"Connected to MongoDB at {config.MONGODB_URI}, using database '{config.MONGODB_DATABASE}'")
             return self.database
         except Exception as e:
+            logger.error(f"Failed to connect to MongoDB: {e}")
             raise ConnectionError(f"Failed to connect to MongoDB: {e}")
     
     def disconnect(self):
@@ -36,3 +39,4 @@ class DatabaseConnection:
         """
         if self.client:
             self.client.close()
+            logger.info("Disconnected from MongoDB")
