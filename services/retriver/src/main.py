@@ -1,4 +1,5 @@
 from .connector import DatabaseConnection 
+from .dal import DalMongo
 import logging
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -14,8 +15,14 @@ class manager:
         connection.connect()
 
 
+    def test_dal(self):
+        dal = DalMongo()
+        docs = dal.get_oldest_documents(time_stamp="2020-03-16T13:43:43.000+00:00", limit=2)
+        for doc in docs:
+            print(doc)
+
+
         
 if __name__ == "__main__":
-    m = manager()
-    m.test_connection()
-    
+    mgr = manager()
+    mgr.test_dal()
