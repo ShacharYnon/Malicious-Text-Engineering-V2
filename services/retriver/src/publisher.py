@@ -1,9 +1,12 @@
 import logging
 from .. import config
+<<<<<<< HEAD
 from bson import json_util
+=======
+>>>>>>> 6f4dc1b1ca0c7600ab9813a56db765abfcb960aa
 from typing import List
 from kafka import KafkaProducer
-
+from bson import json_util
 logger = logging.getLogger(__name__)
 
 class Publisher:
@@ -12,7 +15,12 @@ class Publisher:
     """
     def __init__(self):
         self._producer = KafkaProducer(
+<<<<<<< HEAD
             bootstrap_servers=config.KAFKA_BOOTSTRAP,
+=======
+            # bootstrap_servers=config.KAFKA_BOOTSTRAP,
+            bootstrap_servers=["127.0.0.1:9094"],
+>>>>>>> 6f4dc1b1ca0c7600ab9813a56db765abfcb960aa
             value_serializer=lambda v: json_util.dumps(v).encode('utf-8')
         )
         logger.info(f"Kafka Producer initialized with bootstrap servers: {config.KAFKA_BOOTSTRAP}")
@@ -37,3 +45,4 @@ class Publisher:
         except Exception as e:
             logger.error(f"Failed to publish message to topic '{topic}': {e}")
             raise RuntimeError(f"Failed to publish message to topic '{topic}': {e}")
+    

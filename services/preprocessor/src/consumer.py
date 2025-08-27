@@ -6,11 +6,11 @@ from .. import config
 logger = logging.getLogger(__name__)
 
 class Consumer:
-    def __init__(self, topic: str, bootstrap_servers: List[str], group_id: str):
+    def __init__(self, topic: str, bootstrap_servers: List[str]):
         self.consumer = KafkaConsumer(
             topic,
             bootstrap_servers=bootstrap_servers,
-            group_id=group_id,
+            # group_id=group_id,
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             auto_offset_reset='earliest',
             enable_auto_commit=True
@@ -33,8 +33,10 @@ class Consumer:
 
 
 
-if __name__ == "__main__":    consumer = Consumer(
-        topic=config.KAFKA_TOPIC_ANTI,
-        bootstrap_servers=config.KAFKA_BOOTSTRAP,
-        group_id="preprocessor_group"
-    )
+# if __name__ == "__main__":    
+#     cons = Consumer(
+#         topic=config.KAFKA_TOPIC_NOT_ANTI,
+#         bootstrap_servers=["127.0.0.1:9094"],
+#     )
+#     for msg in cons.consume_messages():
+#         print(msg)

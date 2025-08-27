@@ -10,7 +10,7 @@ import datetime
 from .. import config
 from .publisher import Publisher
 
-
+logger = logging.getLogger(__name__)
 
 class manager:
 
@@ -25,7 +25,7 @@ class manager:
 
 
     def main(self):
-        self.data = self.dal.get_oldest_documents()
+        self.data = self.dal.get_oldest_documents(limit=2)
         while True:
             for docs in self.data:
                 anti = []
@@ -39,6 +39,13 @@ class manager:
                     self.publisher.publish(self.topic_anti, anti)
                 if not_anti:
                     self.publisher.publish(self.topic_not_anti, not_anti)
+                logger.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
+                time.sleep(10)
+
+
+            
+        
+
                 logging.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
                 print("waiting for 60 seconds")
                 time.sleep(10)
