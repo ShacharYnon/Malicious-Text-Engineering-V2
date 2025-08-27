@@ -1,61 +1,42 @@
 from kafka import KafkaConsumer
-from pymongo import MongoClient, ASCENDING, errors
-from datetime import datetime, timezone
-from .. import config
 import json
-class InterestingConsumerService:
-    def __init__(self) -> None:
-        self._consumer = KafkaConsumer(
-            config.KAFKA_TOPIC,
-            bootstrap_servers=config.KAFKA_BOOTSTRAP,
-            value_deserializer=lambda m: json.loads(m.decode("utf-8")),
-            enable_auto_commit=False,
-            auto_offset_reset=config.AUTO_OFFSET_RESET,
-            group_id=config.GROUP_ID,
-            max_poll_interval_ms=config.MAX_POLL_INTERVAL_MS,
-            session_timeout_ms=config.SESSION_TIMEOUT_MS,
+import logging
+from typing import List
+from .. import config 
+logger = logging.getLogger(__name__)
+
+class Consumer:
+    def __init__(self, topic: str, bootstrap_servers: List[str]):
+        self.consumer = KafkaConsumer(
+            topic,
+            bootstrap_servers=bootstrap_servers,
+            # group_id=group_id,
+            value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+            auto_offset_reset='earliest',
+            enable_auto_commit=True
         )
-        self._client = MongoClient(config.MONGO_URI, tz_aware=True, uuidRepresentation="standard")
-        self._coll = self._client[config.MONGO_DB][config.COLLECTION_NAME]
-        self._coll.create_index(
-            [("topic", ASCENDING),("kafka_offset", ASCENDING)],
-            unique=True
-        )
-        self._coll.create_index([("timestamp", ASCENDING)])
+        logger.info(f"Kafka consumer initialized for topic: {topic}")
 
-    @property
-    def consumer(self) -> KafkaConsumer:
-        return self._consumer
-
-    @property
-    def collection(self):
-        return self._coll
-
-    def consume_once(self, max_records: int = 10, poll_timeout_ms: int = 200) -> int:
+    def consume_messages(self):
+        """"
+        Consume messages from the Kafka topic
+        Yields:
+            message (Dict): The consumed message
         """
-        Consume up to `max_records` and return how many were stored.
-        Designed to be called from an HTTP endpoint without blocking.
-        """
-        consumed = 0
-        records = self._consumer.poll(timeout_ms=poll_timeout_ms, max_records=max_records)
+        try:
+            for message in self.consumer:
+                logger.info(f"Consumed message: {message.value}")
+                yield message.value
+        except Exception as e:
+            logger.error(f"Error consuming messages: {e}")
+            raise RuntimeError(f"Error consuming messages: {e}")
 
-        for tp, msgs in records.items():
-            for msg in msgs:
-                try:
-                    doc = {
-                        "topic": msg.topic,
-                        "offset": msg.offset,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                        "value": msg.value,
-                    }
-                    self._coll.insert_one(doc)
-                    consumed += 1
-                except errors.DuplicateKeyError:
-                    pass
-                except Exception as e:
-                    continue
 
-        if consumed:
-            self._consumer.commit()
 
-        return consumed
+# if __name__ == "__main__":    
+#     cons = Consumer(
+#         topic=config.KAFKA_TOPIC_NOT_ANTY,
+#         bootstrap_servers=["127.0.0.1:9094"],
+#     )
+#     for msg in cons.consume_messages():
+#         print(msg)
