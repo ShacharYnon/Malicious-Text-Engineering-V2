@@ -112,6 +112,6 @@ class DataProcessor:
 if __name__ == "__main__":
     processor = DataProcessor()
     sample_text = "This is a sample text! It includes numbers 123 and special characters #@$."
-    preprocessed_text = processor.preprocess(sample_text)
+    preprocessed_text = processor.lemmatize(sample_text)
     print(f"Original Text: {sample_text}")
     print(f"Preprocessed Text: {preprocessed_text}")
