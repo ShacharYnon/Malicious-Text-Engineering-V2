@@ -6,7 +6,6 @@ logging.basicConfig(
     level=logging.INFO
 )
 import time
-import datetime
 from .. import config
 from .publisher import Publisher
 
@@ -43,13 +42,6 @@ class manager:
                 time.sleep(10)
 
 
-            
-        
-
-
-
-
-        
 if __name__ == "__main__":
     mgr = manager()
     # mgr.test_dal()
