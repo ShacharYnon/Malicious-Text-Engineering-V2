@@ -1,6 +1,6 @@
 import logging
 from .. import config
-import json
+from bson import json_util
 from typing import List
 from kafka import KafkaProducer
 
@@ -13,7 +13,7 @@ class Publisher:
     def __init__(self):
         self._producer = KafkaProducer(
             bootstrap_servers=config.KAFKA_BOOTSTRAP,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+            value_serializer=lambda v: json_util.dumps(v).encode('utf-8')
         )
         logger.info(f"Kafka Producer initialized with bootstrap servers: {config.KAFKA_BOOTSTRAP}")
     
