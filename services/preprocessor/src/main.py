@@ -13,3 +13,8 @@ logger = logging.getLogger(__name__)
 
 class ProcessManager:
     def __init__(self):
+        self.publisher = Publisher()
+        self.topic_anti = config.KAFKA_TOPIC_ANTI
+        self.topic_not_anti = config.KAFKA_TOPIC_NOT_ANTI
+        self.data = None
+        self.processor = DataProcessor()
