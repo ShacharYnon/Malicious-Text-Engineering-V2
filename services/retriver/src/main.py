@@ -1,4 +1,3 @@
-from .connector import DatabaseConnection 
 from .dal import DalMongo
 import logging
 logging.basicConfig(
@@ -8,33 +7,51 @@ logging.basicConfig(
 )
 import time
 import datetime
+from .. import config
+from .publisher import Publisher
+
+
 
 class manager:
 
     def __init__(self):
-        pass
+        self.dal = DalMongo()
+        self.publisher = Publisher()
+        self.topic_anti = config.KAFKA_TOPIC_ANTI
+        self.topic_not_anti = config.KAFKA_TOPIC_NOT_ANTI
+        self.data = None
 
-    def test_connection(self):
-        connection = DatabaseConnection()
-        connection.connect()
 
 
-    def test_dal(self):
-        dal = DalMongo()
-        docs = dal.get_oldest_documents(time_stamp="2020-03-16T13:43:43.000+00:00", limit=2)
-        for doc in docs:
-            print(doc)
 
     def main(self):
         
         while True:
-            print(datetime.datetime.now())
+            self.data = self.dal.get_oldest_documents()
             time.sleep(60)
-            print("Hello World")
-            print(datetime.datetime.now())
+            for docs in self.data:
+                anti = []
+                not_anti = []
+                for doc in docs:
+                    if doc.get("Antisemitic", False):
+                        anti.append(doc)
+                    else:
+                        not_anti.append(doc)
+                if anti:
+                    self.publisher.publish(self.topic_anti, anti)
+                if not_anti:
+                    self.publisher.publish(self.topic_not_anti, not_anti)
+                logging.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
+
+            
         
-# if __name__ == "__main__":
-    # mgr = manager()
+
+
+
+
+        
+if __name__ == "__main__":
+    mgr = manager()
     # mgr.test_dal()
-    # mgr.main()
+    mgr.main()
     
