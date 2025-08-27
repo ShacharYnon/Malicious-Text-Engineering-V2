@@ -20,11 +20,8 @@ class manager:
         self.topic_not_anti = config.KAFKA_TOPIC_NOT_ANTI
         self.data = None
 
-
-
-
     def main(self):
-        self.data = self.dal.get_oldest_documents(limit=2)
+        # self.data = self.dal.get_oldest_documents(limit=2)
         while True:
             for docs in self.data:
                 anti = []
