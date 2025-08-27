@@ -15,6 +15,7 @@ class DalMongo:
         self.db = self.db_connection.connect()
         self.collection = self.db[config.MONGODB_COL]
         self.time_stamp = None
+        
     def get_oldest_documents(self, limit: int = 100) -> Generator[List[Dict[str, Any]], None, None]:
         """
         Retrieve the oldest documents from the collection by timestamp
