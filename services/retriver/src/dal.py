@@ -14,7 +14,7 @@ class DalMongo:
         self.db_connection = DatabaseConnection()
         self.db = self.db_connection.connect()
         self.collection = self.db[config.MONGODB_COL]
-    
+        self.time_stamp = None
     def get_oldest_documents(self, limit: int = 100) -> Generator[List[Dict[str, Any]], None, None]:
         """
         Retrieve the oldest documents from the collection by timestamp
@@ -25,12 +25,11 @@ class DalMongo:
             Generator[List[Dict[str, Any]], None, None]:
         """
         try:
-            last_timestamp: Optional[datetime] = None
             while True:
                 query = {}
-                if last_timestamp:
-                    print(f"time stamp for text check:{last_timestamp}\n")
-                    query = {"CreateDate":{"$gt":last_timestamp}}
+                if self.time_stamp:
+                    print(f"time stamp for text check:{self.time_stamp}\n")
+                    query = {"CreateDate":{"$gt":self.time_stamp}}
                 cursor = (
                     self.collection.find(query)
                     .sort("CreateDate",ASCENDING)
@@ -41,7 +40,7 @@ class DalMongo:
                 if not docs:
                     break
                 yield docs
-                last_timestamp = docs[-1]["CreateDate"]
+                self.time_stamp = docs[-1]["CreateDate"]
         except Exception as e:
             logger.error(f"Error retrieving documents: {e}")
             raise RuntimeError(f"Error retrieving documents: {e}")

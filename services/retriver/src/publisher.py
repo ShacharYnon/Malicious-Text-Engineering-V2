@@ -1,10 +1,8 @@
 import logging
 from .. import config
-import json
 from typing import List
 from kafka import KafkaProducer
 from bson import json_util
-from datetime import datetime
 logger = logging.getLogger(__name__)
 
 class Publisher:
@@ -40,9 +38,3 @@ class Publisher:
             logger.error(f"Failed to publish message to topic '{topic}': {e}")
             raise RuntimeError(f"Failed to publish message to topic '{topic}': {e}")
     
-    # def to_jsonable(self,o):
-    #     if isinstance(o, ObjectId):
-    #         return str(o)
-    #     if isinstance(o, datetime):
-    #         return o.isoformat()
-    #     raise TypeError(f"Type {type(o)} not serializable")
