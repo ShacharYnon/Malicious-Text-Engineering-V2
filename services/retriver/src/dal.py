@@ -29,6 +29,7 @@ class DalMongo:
             while True:
                 query = {}
                 if last_timestamp:
+                    print(f"time stamp for text check:{last_timestamp}\n")
                     query = {"CreateDate":{"$gt":last_timestamp}}
                 cursor = (
                     self.collection.find(query)
@@ -46,15 +47,13 @@ class DalMongo:
             raise RuntimeError(f"Error retrieving documents: {e}")
     
 
-
-   
-
-
-
-
-if __name__ == "__main__":
-    dal = DalMongo()
-    docs = dal.get_oldest_documents(limit=2)
-    for doc_batch in docs:
-        for doc in doc_batch:
-            print(doc)
+# if __name__ == "__main__":
+#     dal = DalMongo()
+#     docs = dal.get_oldest_documents(limit=2)
+#     # print(type(docs))
+#     for doc_batch in docs:
+#         # print(type(doc_batch))
+#         for doc in doc_batch:
+#             print(1)
+        
+        
