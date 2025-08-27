@@ -1,9 +1,11 @@
+from math import log
 import re
 import nltk
 from typing import List
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
+import logging
+logger = logging.getLogger(__name__)
 
 _WORD_RE = re.compile(r"\w+")
 _NON_ALNUM_SPACE_RE = re.compile(r"[^a-zA-Z0-9\s]")
@@ -17,8 +19,10 @@ def _ensure_nltk_data() -> None:
     for pkg in ["stopwords", "wordnet", "omw-1.4"]:
         try:
             nltk.data.find(f"corpora/{pkg}")
+            logger.info(f"NLTK package '{pkg}' is already available.")
         except LookupError:
             nltk.download(pkg, quiet=True)
+            logger.info(f"Downloaded NLTK package '{pkg}'.")
 
 
 class DataProcessor:
@@ -50,6 +54,7 @@ class DataProcessor:
         """
         tokens = _WORD_RE.findall(text)
         filtered_tokens = [w for w in tokens if w not in self.stop_words]
+        logger.debug(f"Tokens after stopword removal: {filtered_tokens}")
         return " ".join(filtered_tokens)
 
     def remove_special_characters(self, text: str) -> str:
@@ -89,6 +94,7 @@ class DataProcessor:
         """
         tokens = _WORD_RE.findall(text)
         lemmas = [self.lemmatizer.lemmatize(w) for w in tokens]
+        logger.debug(f"Lemmatized tokens: {lemmas}")
         return " ".join(lemmas)
 
     def preprocess(self, text: str) -> str:

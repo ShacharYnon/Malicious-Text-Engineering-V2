@@ -21,7 +21,7 @@ class manager:
         self.data = None
 
     def main(self):
-        # self.data = self.dal.get_oldest_documents(limit=2)
+        self.data = self.dal.get_oldest_documents(limit=2)
         while True:
             for docs in self.data:
                 anti = []
@@ -38,11 +38,9 @@ class manager:
                 logger.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
                 time.sleep(10)
 
-<<<<<<< HEAD
 
-=======
+
          
->>>>>>> main
 if __name__ == "__main__":
     mgr = manager()
     # mgr.test_dal()
