@@ -1,5 +1,10 @@
 from .connector import DatabaseConnection 
-
+import logging
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.INFO
+)
 
 
 class manager:
@@ -12,5 +17,5 @@ class manager:
         
 if __name__ == "__main__":
     m = manager()
-    print(m.test_connection())
+    m.test_connection()
     
