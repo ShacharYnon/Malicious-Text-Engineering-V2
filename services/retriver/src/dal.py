@@ -1,5 +1,5 @@
-from connector import DatabaseConnection
-from retriver import config
+from .connector import DatabaseConnection
+from .. import config
 from typing import List, Dict, Any
 import logging
 logger = logging.getLogger(__name__)
