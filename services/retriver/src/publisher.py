@@ -17,6 +17,10 @@ class Publisher:
         )
         logger.info(f"Kafka Producer initialized with bootstrap servers: {config.KAFKA_BOOTSTRAP}")
     
+    @property
+    def producer(self):
+        return self._producer
+
     def publish(self, topic: str, message: List[dict]):
         """
         Publish a message to a Kafka topic
