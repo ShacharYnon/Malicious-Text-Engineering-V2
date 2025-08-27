@@ -28,7 +28,6 @@ class manager:
         
         while True:
             self.data = self.dal.get_oldest_documents()
-            time.sleep(60)
             for docs in self.data:
                 anti = []
                 not_anti = []
@@ -42,6 +41,7 @@ class manager:
                 if not_anti:
                     self.publisher.publish(self.topic_not_anti, not_anti)
                 logging.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
+            time.sleep(60)
 
             
         
