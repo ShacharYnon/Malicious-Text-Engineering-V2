@@ -1,6 +1,8 @@
 from .connector import DatabaseConnection
+from pymongo import ASCENDING
+from datetime import datetime
 from .. import config
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Generator, Optional
 import logging
 logger = logging.getLogger(__name__)
 
@@ -13,20 +15,33 @@ class DalMongo:
         self.db = self.db_connection.connect()
         self.collection = self.db[config.MONGODB_COL]
     
-    def get_oldest_documents(self, time_stamp: str, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_oldest_documents(self, limit: int = 100) -> Generator[List[Dict[str, Any]], None, None]:
         """
-        Retrieve the 100 oldest documents from the collection by timestamp
+        Retrieve the oldest documents from the collection by timestamp
         
         Args:
-            limit (int): Number of documents to retrieve
-            time_stamp (str): Field name for timestamp sorting
+            limit (int): Number of documents to retrieve default = 100
         Returns:
-            List[Dict[str, Any]]: List of documents
+            Generator[List[Dict[str, Any]], None, None]:
         """
         try:
-            documents = list(self.collection.find().sort(time_stamp, 1).limit(limit))
-            logger.info(f"Retrieved {len(documents)} oldest documents from the collection")
-            return documents
+            last_timestamp: Optional[datetime] = None
+            while True:
+                query = {}
+                if last_timestamp:
+                    print(f"time stamp for text check:{last_timestamp}\n")
+                    query = {"CreateDate":{"$gt":last_timestamp}}
+                cursor = (
+                    self.collection.find(query)
+                    .sort("CreateDate",ASCENDING)
+                    .limit(limit)
+                )
+                docs = list(cursor)
+                logger.info(f"Retrieved {len(docs)} oldest documents from the collection")
+                if not docs:
+                    break
+                yield docs
+                last_timestamp = docs[-1]["CreateDate"]
         except Exception as e:
             logger.error(f"Error retrieving documents: {e}")
             raise RuntimeError(f"Error retrieving documents: {e}")
@@ -34,6 +49,11 @@ class DalMongo:
 
 # if __name__ == "__main__":
 #     dal = DalMongo()
-#     docs = dal.get_oldest_documents(time_stamp="2020-03-16T13:43:43.000+00:00", limit=2)
-#     for doc in docs:
-#         print(doc)
+#     docs = dal.get_oldest_documents(limit=2)
+#     # print(type(docs))
+#     for doc_batch in docs:
+#         # print(type(doc_batch))
+#         for doc in doc_batch:
+#             print(1)
+        
+        
