@@ -35,7 +35,7 @@ class Consumer:
 
 # if __name__ == "__main__":    
 #     cons = Consumer(
-#         topic=config.KAFKA_TOPIC_NOT_ANTY,
+#         topic=config.KAFKA_TOPIC_NOT_ANTI,
 #         bootstrap_servers=["127.0.0.1:9094"],
 #     )
 #     for msg in cons.consume_messages():
