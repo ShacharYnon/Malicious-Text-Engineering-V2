@@ -6,9 +6,13 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     level=logging.INFO
 )
-
+import time
+import datetime
 
 class manager:
+
+    def __init__(self):
+        pass
 
     def test_connection(self):
         connection = DatabaseConnection()
@@ -21,8 +25,16 @@ class manager:
         for doc in docs:
             print(doc)
 
-
+    def main(self):
         
-if __name__ == "__main__":
-    mgr = manager()
-    mgr.test_dal()
+        while True:
+            print(datetime.datetime.now())
+            time.sleep(60)
+            print("Hello World")
+            print(datetime.datetime.now())
+        
+# if __name__ == "__main__":
+    # mgr = manager()
+    # mgr.test_dal()
+    # mgr.main()
+    
