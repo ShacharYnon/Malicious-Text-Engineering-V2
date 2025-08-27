@@ -13,7 +13,7 @@ class DalMongo:
         self.db = self.db_connection.connect()
         self.collection = self.db[config.MONGODB_COL]
     
-    def get_oldest_documents(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_oldest_documents(self, time_stamp: str, limit: int = 100) -> List[Dict[str, Any]]:
         """
         Retrieve the oldest documents from the collection
         
@@ -24,7 +24,7 @@ class DalMongo:
             List[Dict[str, Any]]: List of documents
         """
         try:
-            documents = list(self.collection.find().sort('timestamp', 1).limit(limit))
+            documents = list(self.collection.find().sort(time_stamp, 1).limit(limit))
             logger.info(f"Retrieved {len(documents)} oldest documents from the collection")
             return documents
         except Exception as e:
