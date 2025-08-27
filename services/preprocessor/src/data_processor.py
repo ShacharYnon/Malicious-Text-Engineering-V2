@@ -11,6 +11,6 @@ tokens = re.findall(r"\w+", text.lower())
 stop_words = set(stopwords.words("english"))
 
 filtered_tokens = [word for word in tokens if word not in stop_words]
-
+print("Stopwords:",len(stop_words))
 print("Original:", tokens)
 print("Filtered:", filtered_tokens)
