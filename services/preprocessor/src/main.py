@@ -1,7 +1,7 @@
 from .. import config
 import logging
 from ...utils.data_processor import TextCleaner
-from .consumer import Consumer
+from ...utils.consumer import Consumer
 from ...utils.publisher import Publisher
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -9,6 +9,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
 
 class ProcessManager:
     def __init__(self):
@@ -20,7 +21,7 @@ class ProcessManager:
     
     def process_and_publish(self):
         logger.info("Starting message consumption and processing")
-        consumer = Consumer()
+        consumer = Consumer([self.topic_anti ,self.topic_not_anti] ,config.KAFKA_BOOTSTRAP ,config.GROUP_ID) 
         for message in consumer.consume_messages():
             processed_anti = []
             processed_not_anti = []
