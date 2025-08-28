@@ -10,7 +10,7 @@ MONGODB_COL_NOT_ANTISEMITIC = os.getenv("MONGODB_COL_NOT_ANTISEMITIC", "not_anti
 
 KAFKA_BOOTSTRAP: List[str] = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092").split(",")
 
-TOPICS_ENRICHER:List[str] = os.getenv("TOPICS_ENRICHER", ["enriched_preprocessed_tweets_antisemitic", "enriched_preprocessed_tweets_not_antisemitic"])
+TOPICS_ENRICHER: List[str] = os.getenv("TOPICS_ENRICHER", "enriched_preprocessed_tweets_antisemitic,enriched_preprocessed_tweets_not_antisemitic").split(",")
 
 # TOPIC_ANT = "enriched_preprocessed_tweets_antisemitic"
 # TOPIC_NOT_ANT = "enriched_preprocessed_tweets_not_antisemitic"

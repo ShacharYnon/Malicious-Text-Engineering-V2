@@ -11,7 +11,7 @@ from ...utils.publisher import Publisher
 
 logger = logging.getLogger(__name__)
 
-class manager:
+class Manager:
 
     def __init__(self):
         self.dal = DalMongo()
@@ -21,8 +21,8 @@ class manager:
         self.data = None
 
     def main(self):
-        self.data = self.dal.get_oldest_documents()
-        while True:
+        try:
+            self.data = self.dal.get_oldest_documents()
             for docs in self.data:
                 anti = []
                 not_anti = []
@@ -37,12 +37,18 @@ class manager:
                     self.publisher.publish(self.topic_not_anti, not_anti)
                 logger.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
                 time.sleep(10)
+        except KeyboardInterrupt:
+            logger.info("Stopping retriever service...")
+        except Exception as e:
+            logger.error(f"Error in main loop: {e}")
+        finally:
+            self.publisher.close()
 
 
 
          
 if __name__ == "__main__":
-    mgr = manager()
+    mgr = Manager()
     # mgr.test_dal()
     mgr.main()
     

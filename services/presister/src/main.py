@@ -1,9 +1,7 @@
-from pydoc_data import topics
-from dal import MongoDAL
+from .dal import MongoDAL
 from .. import config
 import logging
 from ...utils.consumer import Consumer
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +32,8 @@ class PresisterService:
 
     def process_message(self, message):
         try:
-            data = json.loads(message.value.decode('utf-8'))
+            # The consumer already deserializes the JSON, so we don't need json.loads
+            data = message
             prediction = data.get('prediction')
             documents = data.get('documents', [])
             

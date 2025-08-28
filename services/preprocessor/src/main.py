@@ -2,9 +2,9 @@ import logging
 import time
 from typing import List, Dict, Any
 
-from utils.data_processor import TextCleaner
-from utils.consumer import Consumer
-from utils.publisher import Publisher
+from ...utils.data_processor import TextCleaner
+from ...utils.consumer import Consumer
+from ...utils.publisher import Publisher
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -95,3 +95,16 @@ class ProcessManager:
 #         sleep_seconds=10,
 #     )
 #     mgr.run_forever()
+
+if __name__ == "__main__":
+    from .. import config
+    
+    mgr = ProcessManager(
+        kafka_bootstrap=config.KAFKA_BOOTSTRAP,
+        raw_topics=[config.KAFKA_TOPIC_ANTI, config.KAFKA_TOPIC_NOT_ANTI],
+        processed_topic_anti="processed_" + config.KAFKA_TOPIC_ANTI,
+        processed_topic_not_anti="processed_" + config.KAFKA_TOPIC_NOT_ANTI,
+        group_id=config.GROUP_ID,
+        sleep_seconds=10,
+    )
+    mgr.run_forever()

@@ -38,7 +38,10 @@ class EnricherService:
             List[Dict[str, Any]]: List of enriched documents
         """
         try:
-            fully_enriched_docs = self.weapons_detector.detect_weapons(documents)
+            # First apply sentiment analysis
+            sentiment_enriched_docs = self.sentiment_enhancer.enrich_documents(documents)
+            # Then apply weapons detection
+            fully_enriched_docs = self.weapons_detector.detect_weapons(sentiment_enriched_docs)
             return fully_enriched_docs
         except Exception as e:
             logger.error(f"Error enriching documents: {e}")
