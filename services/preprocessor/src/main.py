@@ -92,9 +92,9 @@ if __name__ == "__main__":
         kafka_bootstrap=config.KAFKA_BOOTSTRAP,
         raw_topics=config.RAW_TOPICS,
         processed_topic_anti=config.KAFKA_TOPIC_ANTI,
-        processed_topic_not_anti=config.KAFKA_TOPIC_NOT_ANTI,
-        group_id="preprocessor",
-        sleep_seconds=10,
+        processed_topic_not_anti=config.KAFKA_TOPIC_NOT_ANTI
+        # group_id="preprocessor",
+        # sleep_seconds=10,
     )
     mgr.run_forever()
 
