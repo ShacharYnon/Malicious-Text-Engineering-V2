@@ -21,7 +21,7 @@ class manager:
         self.data = None
 
     def main(self):
-        self.data = self.dal.get_oldest_documents(limit=2)
+        self.data = self.dal.get_oldest_documents()
         while True:
             for docs in self.data:
                 anti = []
