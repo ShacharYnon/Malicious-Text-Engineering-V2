@@ -1,6 +1,5 @@
 import os
 from typing import List
-##test config file
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 MONGO_DB = os.getenv("MONGO_DB", "mydatabase")
@@ -14,4 +13,3 @@ TOPICS_ENRICHER: List[str] = os.getenv("TOPICS_ENRICHER", "enriched_preprocessed
 
 # TOPIC_ANT = "enriched_preprocessed_tweets_antisemitic"
 # TOPIC_NOT_ANT = "enriched_preprocessed_tweets_not_antisemitic"
-

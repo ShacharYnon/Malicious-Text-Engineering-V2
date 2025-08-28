@@ -1,7 +1,6 @@
 import logging
 import time
 from typing import List, Dict, Any
-
 from ...utils.data_processor import TextCleaner
 from ...utils.consumer import Consumer
 from ...utils.publisher import Publisher
@@ -80,7 +79,7 @@ class ProcessManager:
             self.publisher.close()
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     BOOTSTRAP = ["localhost:9092"]
 #     RAW_TOPICS = ["RAW_TWEETS"]
 #     PROCESSED_ANTI = "PROCESSED_ANTI"

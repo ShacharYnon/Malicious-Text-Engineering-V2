@@ -42,9 +42,7 @@ class Manager:
         except Exception as e:
             logger.error(f"Error in main loop: {e}")
         finally:
-            self.publisher.close()
-
-
+            self.publisher.close(
 
          
 if __name__ == "__main__":
