@@ -6,13 +6,15 @@ logger = logging.getLogger(__name__)
 from typing import List
 
 class Consumer:
-    def __init__(self, topic: str ,kafka_bootstrap:List[str]):
+
+    def __init__(self, topic:List[str] ,kafka_bootstrap:List[str] ,group:str):
         self.consumer = KafkaConsumer(
-            topic,
+            *topic,
             bootstrap_servers=kafka_bootstrap,
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             auto_offset_reset='earliest',
-            enable_auto_commit=True
+            enable_auto_commit=True,
+            group_id=group
         )
         logger.info(f"Kafka consumer initialized for topic: {topic}")
 
