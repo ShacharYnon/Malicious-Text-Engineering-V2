@@ -1,5 +1,5 @@
 kafka-python
-pymongo
-nltk
-stopwordsiso
-clean-text
+pymongo==4.14.1
+nltk==3.9.1
+stopwordsiso==0.6.1
+clean-text==0.6.0
