@@ -25,16 +25,16 @@ class ProcessManager:
         for message in consumer.consume_messages():
             processed_anti = []
             processed_not_anti = []
-            for doc in message:
-                try:
-                    cleaned_text = self.processor.clean_central(doc.get("text", ""))
-                    doc["Cleaned_Text"] = cleaned_text
-                    if doc.get("Antisemitic", False):
-                        processed_anti.append(doc)
-                    else:
-                        processed_not_anti.append(doc)
-                except Exception as e:
-                    logger.error(f"Error processing document ID {doc.get('_id')}: {e}")
+            # for doc in message:
+            try:
+                cleaned_text = self.processor.clean_central(message.get("text", ""))
+                message["Cleaned_Text"] = cleaned_text
+                if message.get("Antisemitic", False):
+                    processed_anti.append(message)
+                else:
+                    processed_not_anti.append(message)
+            except Exception as e:
+                    logger.error(f"Error processing document ID {message.get('_id')}: {e}")
             if processed_anti:
                 self.publisher.publish(self.topic_anti, processed_anti)
             if processed_not_anti:
