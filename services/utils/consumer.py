@@ -3,12 +3,13 @@ import json
 import logging
 from services.preprocessor import config 
 logger = logging.getLogger(__name__)
+from typing import List
 
 class Consumer:
-    def __init__(self, topic: str):
+    def __init__(self, topic: str ,kafka_bootstrap:List[str]):
         self.consumer = KafkaConsumer(
             topic,
-            bootstrap_servers=config.KAFKA_BOOTSTRAP,
+            bootstrap_servers=kafka_bootstrap,
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             auto_offset_reset='earliest',
             enable_auto_commit=True

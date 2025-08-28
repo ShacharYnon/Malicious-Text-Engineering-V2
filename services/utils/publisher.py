@@ -6,9 +6,12 @@ from services.preprocessor import config
 logger = logging.getLogger(__name__)
 
 class Publisher:
-    def __init__(self):
+    """"
+    a Kafka Publisher to send messages to a topic
+    """
+    def __init__(self ,kafka_bootstrap:List[str] ):
         self._producer = KafkaProducer(
-            bootstrap_servers=config.KAFKA_BOOTSTRAP,
+            bootstrap_servers=kafka_bootstrap,
             value_serializer=lambda v: json_util.dumps(v).encode('utf-8')
         )
         logger.info(f"Kafka Producer initialized with bootstrap servers: {config.KAFKA_BOOTSTRAP}")

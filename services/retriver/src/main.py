@@ -7,7 +7,7 @@ logging.basicConfig(
 )
 import time
 from .. import config
-from .publisher import Publisher
+from ...utils.publisher import Publisher
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class manager:
 
     def __init__(self):
         self.dal = DalMongo()
-        self.publisher = Publisher()
+        self.publisher = Publisher(config.KAFKA_BOOTSTRAP)
         self.topic_anti = config.KAFKA_TOPIC_ANTI
         self.topic_not_anti = config.KAFKA_TOPIC_NOT_ANTI
         self.data = None
@@ -46,3 +46,7 @@ if __name__ == "__main__":
     # mgr.test_dal()
     mgr.main()
     
+
+# This is the commend to run 
+
+# python -m services.retriver.src.main
