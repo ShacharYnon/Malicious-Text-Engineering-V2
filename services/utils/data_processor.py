@@ -33,7 +33,7 @@ class TextCleaner:
             raise RuntimeError(f"Error during text cleaning: {e}")
         return " ".join(stemmed)
 
-if __name__ == "__main__":
-    cleaner = TextCleaner()
-    sample_text = "This is a Sample pilow! With Punctuation, and stopwords. AK-47   Guns"
-    print(cleaner.clean_central(sample_text))
+# if __name__ == "__main__":
+#     cleaner = TextCleaner()
+#     sample_text = "This is a Sample text! With Punctuation, and stopwords. AK-47"
+#     print(cleaner.clean_central(sample_text))
