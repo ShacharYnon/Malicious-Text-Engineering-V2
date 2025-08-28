@@ -26,7 +26,7 @@ class Enricher:
         enriched_docs = []
         for doc in documents:
             try:
-                text = doc.get("text", "")
+                text = doc.get("Cleaned_Text", "")
                 sentiment_scores = self.sentiment_analyzer.polarity_scores(text)
                 sentiment_scores = self._point_sentiment(sentiment_scores['compound'])
                 enriched_doc = {
