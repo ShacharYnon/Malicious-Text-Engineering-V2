@@ -36,7 +36,7 @@ class manager:
                 if not_anti:
                     self.publisher.publish(self.topic_not_anti, not_anti)
                 logger.info(f"Published {len(anti)} antisemitic and {len(not_anti)} non-antisemitic documents")
-                time.sleep(10)
+                time.sleep(60)
 
 
 

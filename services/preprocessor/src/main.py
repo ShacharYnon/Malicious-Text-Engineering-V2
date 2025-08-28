@@ -1,10 +1,10 @@
 import logging
 import time
 from typing import List, Dict, Any
-
-from utils.data_processor import TextCleaner
-from utils.consumer import Consumer
-from utils.publisher import Publisher
+from .. import config
+from ...utils.data_processor import TextCleaner
+from ...utils.consumer import Consumer
+from ...utils.publisher import Publisher
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -82,18 +82,22 @@ class ProcessManager:
             self.publisher.close()
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     BOOTSTRAP = ["localhost:9092"]
 #     RAW_TOPICS = ["RAW_TWEETS"]
 #     PROCESSED_ANTI = "PROCESSED_ANTI"
 #     PROCESSED_NOT_ANTI = "PROCESSED_NOT_ANTI"
 
-#     mgr = ProcessManager(
-#         kafka_bootstrap=BOOTSTRAP,
-#         raw_topics=RAW_TOPICS,
-#         processed_topic_anti=PROCESSED_ANTI,
-#         processed_topic_not_anti=PROCESSED_NOT_ANTI,
-#         group_id="preprocessor",
-#         sleep_seconds=10,
-#     )
-#     mgr.run_forever()
+    mgr = ProcessManager(
+        kafka_bootstrap=config.KAFKA_BOOTSTRAP,
+        raw_topics=config.RAW_TOPICS,
+        processed_topic_anti=config.KAFKA_TOPIC_ANTI,
+        processed_topic_not_anti=config.KAFKA_TOPIC_NOT_ANTI,
+        group_id="preprocessor",
+        sleep_seconds=10,
+    )
+    mgr.run_forever()
+
+
+# This commend to run:
+# python -m services.preprocessor.src.main
