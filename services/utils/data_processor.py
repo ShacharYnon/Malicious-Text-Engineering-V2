@@ -17,7 +17,7 @@ class TextCleaner:
         logger.info("Tokenizing text")
         return re.findall(r"[a-zA-Z0-9']+", text)
 
-    def clean_central(self, text: str) -> str:
+    def clean_central(self, text) -> str:
         cleaned = cleantext.clean(
             text,
             lower=True,

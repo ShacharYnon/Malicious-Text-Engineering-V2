@@ -1,5 +1,5 @@
 from kafka import KafkaConsumer
-import json
+from bson import json_util
 import logging
 from services.preprocessor import config 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ class Consumer:
         self.consumer = KafkaConsumer(
             *topic,
             bootstrap_servers=kafka_bootstrap,
-            value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+            value_deserializer=lambda m: json_util.loads(m.decode('utf-8')),
             auto_offset_reset='earliest',
             enable_auto_commit=True,
             group_id=group
