@@ -1,17 +1,22 @@
-from venv import logger
-import nltk
+import os
 import logging
 from typing import List, Dict, Any
-import pandas as pd
+os.environ['NLTK_DATA'] = '/usr/local/share/nltk_data'
 
-nltk.download('vader_lexicon')
+import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
 logger = logging.getLogger(__name__)
 
 
 class Enricher:
     def __init__(self):
-        self.sentiment_analyzer = SentimentIntensityAnalyzer()
+        try:
+            self.sentiment_analyzer = SentimentIntensityAnalyzer()
+        except LookupError as e:
+            logger.error(f"NLTK data not found: {e}")
+            logger.error("Make sure vader_lexicon is installed in the Docker image")
+            raise
 
     def enrich_documents(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -40,6 +45,13 @@ class Enricher:
         return enriched_docs
 
     def _point_sentiment(self, score: float) -> str:
+        """"
+        Convert compound sentiment score to categorical sentiment
+        Args:
+            score (float): Compound sentiment score
+            Returns:
+            str: Categorical sentiment ("positive", "negative", "neutral")
+            """
         if score >= 0.05:
             return "positive"
         elif score <= -0.05:
@@ -50,8 +62,8 @@ class Enricher:
 
 if __name__ == "__main__":
     sample_docs = [
-        {"_id": 1, "text": "I love programming!"},
-        {"_id": 2, "text": "I hate bugs."},
+        {"_id": 1, "Cleaned_Text": "I love programming!"},
+        {"_id": 2, "Cleaned_Text": "I hate bugs."},
     ]
     enricher = Enricher()
     enriched = enricher.enrich_documents(sample_docs)
