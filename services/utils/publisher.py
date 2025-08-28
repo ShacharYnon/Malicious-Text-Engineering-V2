@@ -1,44 +1,48 @@
+from typing import Iterable, Dict, Any, List
 from kafka import KafkaProducer
 from bson import json_util
-from typing import List
 import logging
-from services.preprocessor import config
+
 logger = logging.getLogger(__name__)
 
+
 class Publisher:
-    """"
-    a Kafka Publisher to send messages to a topic
     """
-    def __init__(self ,kafka_bootstrap:List[str] ):
+    Kafka Publisher to send messages to a topic.
+    """
+
+    def __init__(self, kafka_bootstrap: List[str]):
         self._producer = KafkaProducer(
             bootstrap_servers=kafka_bootstrap,
-            value_serializer=lambda v: json_util.dumps(v).encode('utf-8')
+            value_serializer=lambda v: json_util.dumps(v).encode("utf-8"),
         )
-        logger.info(f"Kafka Producer initialized with bootstrap servers: {config.KAFKA_BOOTSTRAP}")
+        logger.info(f"KafkaProducer created. bootstrap={kafka_bootstrap}")
 
-    @property
-    def producer(self):
-        return self._producer
-
-    def publish(self, topic: str, message: List[dict]):
+    def publish(self, topic: str, messages: Iterable[Dict[str, Any]]) -> None:
         """
-        Publish a message to a Kafka topic
-        
-        Args:
-            topic (str): Kafka topic name
-            message (dict): Message to send
+        Publish an iterable of dict messages to `topic`.
+        """
+        # CHANGE: clarified type to iterable-of-dicts; producer sends each item separately.
+        try:
+            count = 0
+            for m in messages:
+                self._producer.send(topic, value=m)
+                count += 1
+            self._producer.flush()
+            logger.info(f"Published {count} message(s) to topic '{topic}'.")
+        except Exception as e:
+            logger.error(f"Failed to publish to '{topic}': {e}")
+            raise RuntimeError(f"Failed to publish to '{topic}': {e}")
+
+    def publish_one(self, topic: str, message: Dict[str, Any]) -> None:
+        self.publish(topic, [message])
+
+    def close(self) -> None:
+        """
+        Close the Kafka producer.
         """
         try:
-            for m in message:
-                self._producer.send(topic, value=m)
             self._producer.flush()
-            logger.info(f"Message published to topic '{topic}': {message}")
-        except Exception as e:
-            logger.error(f"Failed to publish message to topic '{topic}': {e}")
-            raise RuntimeError(f"Failed to publish message to topic '{topic}': {e}")
-    
-    def close(self) -> None:
-        """Close the Kafka producer."""
-        self.producer.flush()
-        self.producer.close()
-        logger.info("Kafka producer closed.")
+            self._producer.close()
+        finally:
+            logger.info("Kafka producer closed.")

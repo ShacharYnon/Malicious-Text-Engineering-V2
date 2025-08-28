@@ -1,41 +1,55 @@
+from typing import Iterable, List, Dict, Any, Optional
 from kafka import KafkaConsumer
 from bson import json_util
 import logging
-from services.preprocessor import config 
+
 logger = logging.getLogger(__name__)
-from typing import List
+
 
 class Consumer:
+    """
+    Lightweight Kafka consumer that yields each message's value (a dict).
+    """
 
-    def __init__(self, topic:List[str] ,kafka_bootstrap:List[str] ,group:str):
+    def __init__(self, topics: List[str], kafka_bootstrap: List[str], group_id: str):
+        """
+        :param topics: list of topic names to subscribe to
+        :param kafka_bootstrap: list of bootstrap server addresses
+        :param group_id: consumer group id
+        """
         self.consumer = KafkaConsumer(
-            *topic,
+            *topics,
             bootstrap_servers=kafka_bootstrap,
-            value_deserializer=lambda m: json_util.loads(m.decode('utf-8')),
-            auto_offset_reset='earliest',
+            value_deserializer=lambda m: json_util.loads(m.decode("utf-8")),
+            auto_offset_reset="earliest",
             enable_auto_commit=True,
-            group_id=group
+            group_id=group_id,
         )
-        logger.info(f"Kafka consumer initialized for topic: {topic}")
 
-    def consume_messages(self):
-        """"
-        Consume messages from the Kafka topic
-        Yields:
-            message (Dict): The consumed message
+        logger.info(
+            f"KafkaConsumer created. topics={topics}, bootstrap={kafka_bootstrap}, group_id={group_id}"
+        )
+
+    def consume_messages(self) -> Iterable[Dict[str, Any]]:
+        """
+        Yield each message value as a dict.
         """
         try:
             for message in self.consumer:
-                logger.info(f"Consumed message: {message.value}")
-                yield message.value
+                val = message.value
+                if not isinstance(val, dict):
+                    logger.warning(
+                        f"Expected dict payload but got {type(val).__name__}; wrapping into dict."
+                    )
+                    val = {"payload": val}
+                logger.debug(f"Consumed from {message.topic}@{message.partition}/{message.offset}")
+                yield val
         except Exception as e:
             logger.error(f"Error consuming messages: {e}")
             raise RuntimeError(f"Error consuming messages: {e}")
 
-
-
-# if __name__ == "__main__":    
-#     cons = Consumer(
-#         topic=config.KAFKA_TOPIC_ANTI,
-#         group_id=
-#     )
+    def close(self) -> None:
+        try:
+            self.consumer.close()
+        finally:
+            logger.info("Kafka consumer closed.")
