@@ -15,6 +15,7 @@ class Features:
     """
     a processing class for tweets data
     """
+    
     def __init__(self, dataframe, column="Text"):
         """Initialize TweetsProcessor with dataframe and configuration"""
         logger.info("Initializing TweetsProcessor...")
@@ -41,9 +42,9 @@ class Features:
             logger.error("Full traceback:", exc_info=True)
             raise
 
-    def _load_weapons_list(self):
+    def load_weapons_list(self):
         """Load weapons list from file once during initialization with detailed logging"""
-        weapons_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'weapons.txt')
+        weapons_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'weapon_list.txt')
         logger.info(f"Looking for weapons file at: {weapons_file_path}")
         
         try:
@@ -66,8 +67,8 @@ class Features:
             logger.error(f"Unexpected error loading weapons file: {str(e)}")
             logger.error(f"Error type: {type(e).__name__}")
             return set()
-    
-    def _initialize_sentiment_analyzer(self):
+
+    def initialize_sentiment_analyzer(self):
         """Initialize sentiment analyzer once during initialization with detailed logging"""
         logger.info("Downloading VADER lexicon for sentiment analysis...")
         
@@ -85,43 +86,7 @@ class Features:
             logger.info("Sentiment analysis will not be available")
             return None
 
-    def _find_rarest_word(self, text: str) -> str:
-        """
-        Find the rarest word in a tweet with detailed logging
-        
-        Args:
-            text: tweet text
-            
-        Returns:
-            Most rarest word
-        """
-        logger.info("Starting rarest word analysis...")
-        
-        if not text:
-            logger.info("Empty text provided for rarest word analysis")
-            return ""
-        
-        try:
-            words = re.findall(r'\b\w+\b', text.lower())
-            
-            if not words:
-                logger.info("No words found in text after regex processing")
-                return ""
-            
-            logger.info(f"Found {len(words)} words in text")
-            
-            word_count = Counter(words)
-            rarest_word = min(word_count.keys(), key=lambda x: (word_count[x], words.index(x)))
-            
-            logger.info(f"Rarest word identified: '{rarest_word}' (count: {word_count[rarest_word]})")
-            return rarest_word
-            
-        except Exception as e:
-            logger.error(f"Error finding rarest word: {str(e)}")
-            logger.error(f"Error type: {type(e).__name__}")
-            return ""
-
-    def _get_sentiment_for_text(self, text: str) -> str:
+    def get_sentiment_for_text(self, text: str) -> str:
         """
         Analyze the sentiment of a single text with detailed logging.
         
@@ -154,7 +119,7 @@ class Features:
             logger.error(f"Error type: {type(e).__name__}")
             return "error"
     
-    def _classify_sentiment(self, compound_score)-> str:
+    def classify_sentiment(self, compound_score)-> str:
         """
         Classify sentiment based on compound score.
 
@@ -167,7 +132,7 @@ class Features:
         else:
             return "neutral text"
         
-    def _extract_weapons_from_text(self, text: str) -> list:
+    def extract_weapons_from_text(self, text: str) -> list:
         """
         Extract weapon names (single or multi-word) from text with detailed logging.
         
@@ -221,16 +186,7 @@ class Features:
             if not text:
                 text = ""
                 logger.info(f"Empty text provided for tweet ID: {tweet_id}")
-            
-            # Find rarest word
-            logger.info("Finding rarest word...")
-            try:
-                rarest_word = self._find_rarest_word(text)
-                logger.info(f"Rarest word found: {rarest_word}")
-            except Exception as e:
-                logger.error(f"Error finding rarest word for tweet {tweet_id}: {str(e)}")
-                rarest_word = ""
-            
+
             # Get sentiment
             logger.info("Analyzing sentiment...")
             try:
@@ -251,10 +207,8 @@ class Features:
                 weapons_str = "none"
             
             result = {
-                "id": tweet_id or str(uuid.uuid4()),
-                "rarest_word": rarest_word,
                 "sentiment": sentiment,
-                "original_text": text,
+                "original_text": text,     ##==========================================================================
                 "weapons_detected": weapons_str
             }
             
@@ -268,8 +222,6 @@ class Features:
             
             # Return error result instead of failing completely
             return {
-                "id": tweet_id or str(uuid.uuid4()),
-                "rarest_word": "",
                 "sentiment": "error",
                 "original_text": text,
                 "weapons_detected": "error",
