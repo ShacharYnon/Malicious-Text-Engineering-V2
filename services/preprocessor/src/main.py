@@ -30,7 +30,7 @@ class ProcessManager:
     ):
         self.cleaner = TextCleaner(lang="en")
         self.consumer = Consumer(
-            topics=raw_topics,           # CHANGE: consume ONLY from RAW_* topics.
+            topics=raw_topics,          
             kafka_bootstrap=kafka_bootstrap,
             group_id=group_id,
         )
