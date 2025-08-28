@@ -9,7 +9,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 logger = logging.getLogger(__name__)
 
 
-class Enricher:
+class SentimentEnhancer:
     def __init__(self):
         try:
             self.sentiment_analyzer = SentimentIntensityAnalyzer()
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         {"_id": 1, "Cleaned_Text": "I love programming!"},
         {"_id": 2, "Cleaned_Text": "I hate bugs."},
     ]
-    enricher = Enricher()
+    enricher = SentimentEnhancer()
     enriched = enricher.enrich_documents(sample_docs)
     for doc in enriched:
         print(doc)
