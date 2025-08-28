@@ -8,7 +8,6 @@ class WeaponsDetector:
     Detect weapons in text documents and enrich them with a 'Weapons_Detected' field."""
     def __init__(self, weapons_list: List[str]):
         self.weapons_list = weapons_list
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
     def detect_weapons(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -35,3 +34,15 @@ class WeaponsDetector:
                 self.logger.error(f"Error processing document {doc.get('_id')}: {e}")
                 continue
         return enriched_docs
+    
+# if __name__ == "__main__":
+#     sample_docs = [
+#         {"_id": 1, "Cleaned_Text": "This is a test text with a gun."},
+#         {"_id": 2, "Cleaned_Text": "No weapons here."},
+#         {"_id": 3, "Cleaned_Text": "Another text with a knife and a rifle."}
+#     ]
+#     weapons = ["gun", "knife", "rifle"]
+#     detector = WeaponsDetector(weapons)
+#     enriched = detector.detect_weapons(sample_docs)
+#     for doc in enriched:
+#         print(doc)
