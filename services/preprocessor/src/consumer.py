@@ -1,7 +1,6 @@
 from kafka import KafkaConsumer
 import json
 import logging
-from typing import List
 from .. import config 
 logger = logging.getLogger(__name__)
 
