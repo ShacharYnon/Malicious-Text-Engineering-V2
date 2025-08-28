@@ -22,7 +22,6 @@ class Publisher:
         """
         Publish an iterable of dict messages to `topic`.
         """
-        # CHANGE: clarified type to iterable-of-dicts; producer sends each item separately.
         try:
             count = 0
             for m in messages:
