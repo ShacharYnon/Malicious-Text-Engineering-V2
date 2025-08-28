@@ -1,6 +1,6 @@
 from .. import config
 import logging
-from .data_processor import DataProcessor
+from .data_processor import TextCleaner
 from .consumer import Consumer
 from .publisher import Publisher
 logging.basicConfig(
@@ -17,4 +17,35 @@ class ProcessManager:
         self.topic_anti = config.KAFKA_TOPIC_ANTI
         self.topic_not_anti = config.KAFKA_TOPIC_NOT_ANTI
         self.data = None
-        self.processor = DataProcessor()
+        self.processor = TextCleaner()
+    
+    def process_and_publish(self):
+        logger.info("Starting message consumption and processing")
+        consumer = Consumer(
+            topic=config.KAFKA_TOPIC_NOT_ANTI,
+            bootstrap_servers=config.KAFKA_BOOTSTRAP
+        )
+        for message in consumer.consume_messages():
+            processed_anti = []
+            processed_not_anti = []
+            for doc in message:
+                try:
+                    cleaned_text = self.processor.clean_central(doc.get("text", ""))
+                    doc["Cleaned_Text"] = cleaned_text
+                    if doc.get("Antisemitic", False):
+                        processed_anti.append(doc)
+                    else:
+                        processed_not_anti.append(doc)
+                except Exception as e:
+                    logger.error(f"Error processing document ID {doc.get('_id')}: {e}")
+            if processed_anti:
+                self.publisher.publish(self.topic_anti, processed_anti)
+            if processed_not_anti:
+                self.publisher.publish(self.topic_not_anti, processed_not_anti)
+            logger.info(f"Processed and published {len(processed_anti)} antisemitic and {len(processed_not_anti)} non-antisemitic documents")
+
+    def main(self):
+        self.process_and_publish()
+if __name__ == "__main__":
+    manager = ProcessManager()
+    manager.process_and_publish()
