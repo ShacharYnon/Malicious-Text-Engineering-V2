@@ -21,10 +21,7 @@ class ProcessManager:
     
     def process_and_publish(self):
         logger.info("Starting message consumption and processing")
-        consumer = Consumer(
-            topic=config.KAFKA_TOPIC_NOT_ANTI,
-            bootstrap_servers=config.KAFKA_BOOTSTRAP
-        )
+        consumer = Consumer()
         for message in consumer.consume_messages():
             processed_anti = []
             processed_not_anti = []
