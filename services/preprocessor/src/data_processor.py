@@ -1,123 +1,39 @@
-from math import log
 import re
-import nltk
 from typing import List
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+import cleantext
+from stopwordsiso import stopwords
+from nltk.stem import PorterStemmer
 import logging
 logger = logging.getLogger(__name__)
+class TextCleaner:
+    def __init__(self, lang: str = "en"):
+        self.lang = lang
+        self.stopwords = stopwords(lang) 
+        self.stemmer = PorterStemmer()
 
-_WORD_RE = re.compile(r"\w+")
-_NON_ALNUM_SPACE_RE = re.compile(r"[^a-zA-Z0-9\s]")
+    def _tokenize(self, text: str) -> List[str]:
+        logger.info("Tokenizing text")
+        return re.findall(r"[a-zA-Z0-9']+", text)
 
-
-def _ensure_nltk_data() -> None:
-    """
-    Ensure required NLTK corpora are available.
-    Downloads 'stopwords', 'wordnet', and 'omw-1.4' if missing.
-    """
-    for pkg in ["stopwords", "wordnet", "omw-1.4"]:
+    def clean_central(self, text: str) -> str:
+        cleaned = cleantext.clean(
+            text,
+            lower=True,
+            no_currency_symbols=True,
+            no_punct=True,
+            no_line_breaks=True,
+        )
+        tokens = self._tokenize(cleaned)
         try:
-            nltk.data.find(f"corpora/{pkg}")
-            logger.info(f"NLTK package '{pkg}' is already available.")
-        except LookupError:
-            nltk.download(pkg, quiet=True)
-            logger.info(f"Downloaded NLTK package '{pkg}'.")
+            filtered = [t for t in tokens if t not in self.stopwords]
+            stemmed = [self.stemmer.stem(t) for t in filtered]
+            logger.info("Text cleaned successfully")
+        except Exception as e:
+            logger.error(f"Error during text cleaning: {e}")
+            raise RuntimeError(f"Error during text cleaning: {e}")
+        return " ".join(stemmed)
 
-
-class DataProcessor:
-    """
-    A class for preprocessing text data: lowercasing, special-char removal,
-    stopword removal, and lemmatization.
-    """
-
-    def __init__(self, language: str = "english") -> None:
-        """
-        Initialize the processor with a stopword set and a lemmatizer.
-
-        Args:
-            language: Language name for NLTK stopwords (default: "english").
-        """
-        _ensure_nltk_data()
-        self.stop_words = set(stopwords.words(language))
-        self.lemmatizer = WordNetLemmatizer()
-
-    def remove_stopwords(self, text: str) -> str:
-        """
-        Remove stopwords from the input text.
-
-        Args:
-            text: The input text.
-
-        Returns:
-            The text with stopwords removed.
-        """
-        tokens = _WORD_RE.findall(text)
-        filtered_tokens = [w for w in tokens if w not in self.stop_words]
-        logger.debug(f"Tokens after stopword removal: {filtered_tokens}")
-        return " ".join(filtered_tokens)
-
-    def remove_special_characters(self, text: str) -> str:
-        """
-        Remove special characters from the input text, preserving letters,
-        digits, and spaces.
-
-        Args:
-            text: The input text.
-
-        Returns:
-            The text with special characters removed.
-        """
-        return _NON_ALNUM_SPACE_RE.sub("", text)
-
-    def to_lowercase(self, text: str) -> str:
-        """
-        Convert the input text to lowercase.
-
-        Args:
-            text: The input text.
-
-        Returns:
-            The lowercased text.
-        """
-        return text.lower()
-
-    def lemmatize(self, text: str) -> str:
-        """
-        Lemmatize tokens in the input text using WordNet.
-
-        Args:
-            text: The input text.
-
-        Returns:
-            The lemmatized text.
-        """
-        tokens = _WORD_RE.findall(text)
-        lemmas = [self.lemmatizer.lemmatize(w) for w in tokens]
-        logger.debug(f"Lemmatized tokens: {lemmas}")
-        return " ".join(lemmas)
-
-    def preprocess(self, text: str) -> str:
-        """
-        Apply standard preprocessing: lowercase → strip specials → remove
-        stopwords → lemmatize.
-
-        Args:
-            text: The input text.
-
-        Returns:
-            The preprocessed text.
-        """
-        text = self.to_lowercase(text)
-        text = self.remove_special_characters(text)
-        text = self.remove_stopwords(text)
-        text = self.lemmatize(text)
-        return text
-
-
-if __name__ == "__main__":
-    processor = DataProcessor()
-    sample_text = "This is a sample text! It includes numbers 123 and special characters #@$. and Gun AK-47"
-    preprocessed_text = processor.preprocess(sample_text)
-    print(f"Original Text: {sample_text}")
-    print(f"Preprocessed Text: {preprocessed_text}")
+# if __name__ == "__main__":
+#     cleaner = TextCleaner()
+#     sample_text = "This is a Sample text! With Punctuation, and stopwords. AK-47"
+#     print(cleaner.clean_central(sample_text))
