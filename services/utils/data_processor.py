@@ -5,7 +5,9 @@ from stopwordsiso import stopwords
 from nltk.stem import PorterStemmer
 import logging
 logger = logging.getLogger(__name__)
+
 class TextCleaner:
+
     def __init__(self, lang: str = "en"):
         self.lang = lang
         self.stopwords = stopwords(lang) 

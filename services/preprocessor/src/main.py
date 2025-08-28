@@ -1,8 +1,8 @@
 from .. import config
 import logging
-from .data_processor import TextCleaner
+from ...utils.data_processor import TextCleaner
 from .consumer import Consumer
-from .publisher import Publisher
+from ...utils.publisher import Publisher
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
@@ -10,10 +10,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 class ProcessManager:
     def __init__(self):
-        self.publisher = Publisher()
+        self.publisher = Publisher(config.KAFKA_BOOTSTRAP)
         self.topic_anti = config.KAFKA_TOPIC_ANTI
         self.topic_not_anti = config.KAFKA_TOPIC_NOT_ANTI
         self.data = None
@@ -43,6 +42,10 @@ class ProcessManager:
 
     def main(self):
         self.process_and_publish()
+
+
 if __name__ == "__main__":
     manager = ProcessManager()
     manager.process_and_publish()
+
+# 
