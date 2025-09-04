@@ -1,10 +1,12 @@
 import os
 import logging
 from typing import List, Dict, Any
-os.environ['NLTK_DATA'] = '/usr/local/share/nltk_data'
 
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+nltk.download("vader_lexicon")
+os.environ['NLTK_DATA'] = '/usr/local/share/nltk_data'
+
 
 logger = logging.getLogger(__name__)
 
@@ -60,12 +62,12 @@ class SentimentEnhancer:
             return "neutral"
 
 
-if __name__ == "__main__":
-    sample_docs = [
-        {"_id": 1, "Cleaned_Text": "I love programming!"},
-        {"_id": 2, "Cleaned_Text": "I hate bugs."},
-    ]
-    enricher = SentimentEnhancer()
-    enriched = enricher.enrich_documents(sample_docs)
-    for doc in enriched:
-        print(doc)
+# if __name__ == "__main__":
+#     sample_docs = [
+#         {"_id": 1, "Cleaned_Text": "I love programming!"},
+#         {"_id": 2, "Cleaned_Text": "I hate bugs."},
+#     ]
+#     enricher = SentimentEnhancer()
+#     enriched = enricher.enrich_documents(sample_docs)
+#     for doc in enriched:
+#         print(doc)

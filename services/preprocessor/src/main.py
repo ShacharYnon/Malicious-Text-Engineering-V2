@@ -1,10 +1,9 @@
 import logging
 import time
 from typing import List, Dict, Any
-
-from utils.data_processor import TextCleaner
-from utils.consumer import Consumer
-from utils.publisher import Publisher
+from ...utils.data_processor import TextCleaner
+from ...utils.consumer import Consumer
+from ...utils.publisher import Publisher
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -15,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class ProcessManager:
-
     """
     Consume RAW_* topics, clean/transform, and publish to PROCESSED_* topics.
     """
@@ -31,7 +29,7 @@ class ProcessManager:
     ):
         self.cleaner = TextCleaner(lang="en")
         self.consumer = Consumer(
-            topics=raw_topics,           # CHANGE: consume ONLY from RAW_* topics.
+            topics=raw_topics,          
             kafka_bootstrap=kafka_bootstrap,
             group_id=group_id,
         )
@@ -46,7 +44,6 @@ class ProcessManager:
         )
 
     def _process_one(self, doc: Dict[str, Any]) -> Dict[str, Any]:
-        # CHANGE: treat each consumed message as a single dict, not as a list/iterable of keys.
         text = doc.get("text") or doc.get("Text") or ""
         doc["Cleaned_Text"] = self.cleaner.clean_central(text)
         return doc
@@ -82,7 +79,7 @@ class ProcessManager:
             self.publisher.close()
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     BOOTSTRAP = ["localhost:9092"]
 #     RAW_TOPICS = ["RAW_TWEETS"]
 #     PROCESSED_ANTI = "PROCESSED_ANTI"
@@ -97,3 +94,16 @@ class ProcessManager:
 #         sleep_seconds=10,
 #     )
 #     mgr.run_forever()
+
+if __name__ == "__main__":
+    from .. import config
+    
+    mgr = ProcessManager(
+        kafka_bootstrap=config.KAFKA_BOOTSTRAP,
+        raw_topics=[config.KAFKA_TOPIC_ANTI, config.KAFKA_TOPIC_NOT_ANTI],
+        processed_topic_anti="processed_" + config.KAFKA_TOPIC_ANTI,
+        processed_topic_not_anti="processed_" + config.KAFKA_TOPIC_NOT_ANTI,
+        group_id=config.GROUP_ID,
+        sleep_seconds=10,
+    )
+    mgr.run_forever()
