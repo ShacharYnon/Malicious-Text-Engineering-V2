@@ -5,8 +5,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-class Consumer:
+# for many topics
+class Consumer_2:
     """
     Lightweight Kafka consumer that yields each message's value (a dict).
     """
@@ -53,3 +53,29 @@ class Consumer:
             self.consumer.close()
         finally:
             logger.info("Kafka consumer closed.")
+
+
+
+# for one topic 
+
+class Consumer_1:
+
+    def __init__(self, topic:str , kafka_bootstrap: List[str], group_id: str):
+        """
+        :param topics: list of topic names to subscribe to
+        :param kafka_bootstrap: list of bootstrap server addresses
+        :param group_id: consumer group id
+        """
+        self.consumer = KafkaConsumer(
+            topic,
+            bootstrap_servers=kafka_bootstrap,
+            value_deserializer=lambda m: json_util.loads(m.decode("utf-8")),
+            auto_offset_reset="earliest",
+            enable_auto_commit=True,
+            group_id=group_id,
+        )
+
+        logger.info(
+            f"KafkaConsumer created. topics={topic}, bootstrap={kafka_bootstrap}, group_id={group_id}"
+        )
+
